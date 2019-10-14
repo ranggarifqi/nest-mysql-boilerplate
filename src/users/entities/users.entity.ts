@@ -10,7 +10,9 @@ export class Users {
   @Column()
   username: string;
 
-  @Column()
+  @Column({
+    unique: true
+  })
   email: string;
 
   @Column()
@@ -21,7 +23,10 @@ export class Users {
   })
   isVerified: boolean;
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: null,
+  })
   verificationToken: string;
 
   @Column({
