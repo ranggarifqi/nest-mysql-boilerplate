@@ -24,11 +24,17 @@ export class UsersService {
   ) {}
 
   async findAll(): Promise<Users[]> {
-    return await this.userRepository.find();
+    return await this.userRepository.find({
+      select: ['id', 'email', 'username', 'isVerified'],
+      relations: ['profile']
+    });
   }
 
   async findOne(id: number): Promise<Users> {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOne(id, {
+      select: ['id', 'email', 'username', 'isVerified'],
+      relations: ['profile']
+    });
   }
 
   async create(userDto: CreateUserDto): Promise<Users> {
@@ -61,6 +67,21 @@ export class UsersService {
       await this.profileRepository.save(newProfile);
 
       return Promise.resolve(newUser);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async verify(verificationToken: string): Promise<boolean> {
+    try {
+      const user = await this.userRepository.findOne({ verificationToken, isVerified: false });
+      if (!user) {
+        return Promise.resolve(false);
+      } 
+      user.isVerified = true;
+      user.verificationToken = null;
+      await this.userRepository.save(user);
+      return Promise.resolve(true);
     } catch (error) {
       return Promise.reject(error);
     }
