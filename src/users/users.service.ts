@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/user.dto';
 import { UserProfile, Gender } from './entities/user-profile.entity';
 import { Roles } from '../roles/entities/roles.entity';
 import * as bcrypt from 'bcrypt';
+import * as md5 from 'md5';
 
 const SALT_ROUNDS = 10;
 
@@ -40,6 +41,7 @@ export class UsersService {
       if (!role) {
         throw new Error('Role tidak tersedia');
       }
+      const isAdmin = role.name === 'superadmin' || role.name === 'admin';
 
       const profilePayload = {
         ...profile,
@@ -49,7 +51,8 @@ export class UsersService {
       userPayload.password = bcrypt.hashSync(userPayload.password, SALT_ROUNDS);
 
       const newUser = this.userRepository.create(userPayload);
-      newUser.isVerified = true;
+      newUser.isVerified = isAdmin;
+      newUser.verificationToken = !isAdmin ? md5(newUser.email) : null;
       newUser.roles = [role];
       await this.userRepository.save(newUser); 
 
@@ -62,6 +65,7 @@ export class UsersService {
       return Promise.reject(error);
     }
   }
+
 
   //////////////////////
 
