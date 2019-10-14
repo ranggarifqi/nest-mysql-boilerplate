@@ -6,6 +6,9 @@ import { defaultUsers } from './dto/default-users';
 import { CreateUserDto } from './dto/user.dto';
 import { UserProfile, Gender } from './entities/user-profile.entity';
 import { Roles } from '../roles/entities/roles.entity';
+import * as bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UsersService {
@@ -42,6 +45,8 @@ export class UsersService {
         ...profile,
         gender: profile.gender === 'M' ? Gender.MALE : Gender.FEMALE
       };
+
+      userPayload.password = bcrypt.hashSync(userPayload.password, SALT_ROUNDS);
 
       const newUser = this.userRepository.create(userPayload);
       newUser.isVerified = true;
