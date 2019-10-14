@@ -34,7 +34,6 @@ export class Users {
   @JoinTable()
   roles: Roles[]
 
-  @OneToOne(type => UserProfile)
-  @JoinColumn()
+  @OneToOne(type => UserProfile, profile => profile.user)
   profile: UserProfile
 }
