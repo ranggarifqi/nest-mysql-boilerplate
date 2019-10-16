@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
+import { Users } from '../../users/entities/users.entity';
 
 @Entity()
 export class Roles {
@@ -16,4 +17,7 @@ export class Roles {
     default: () => 'NOW()'
   })
   createdAt: Date;
+
+  @ManyToMany(type => Users, users => users.roles)
+  users: Users[]
 }
