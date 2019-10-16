@@ -8,6 +8,7 @@ import { UserProfile, Gender } from './entities/user-profile.entity';
 import { Roles } from '../roles/entities/roles.entity';
 import * as bcrypt from 'bcrypt';
 import * as md5 from 'md5';
+import { MailerService } from '@nest-modules/mailer';
 
 const SALT_ROUNDS = 10;
 
@@ -20,7 +21,8 @@ export class UsersService {
     @InjectRepository(UserProfile)
     private readonly profileRepository: Repository<UserProfile>,
     @InjectRepository(Roles)
-    private readonly roleRepository: Repository<Roles>
+    private readonly roleRepository: Repository<Roles>,
+    private readonly mailerService: MailerService
   ) {}
 
   async findAll(): Promise<Users[]> {
@@ -65,6 +67,17 @@ export class UsersService {
       const newProfile = this.profileRepository.create(profilePayload);
       newProfile.user = newUser;
       await this.profileRepository.save(newProfile);
+
+      // Send Email non blocking
+      if (!isAdmin) {
+        this.mailerService.sendMail({
+          to: newUser.email,
+          subject: 'Pendaftaran user baru',
+          template: 'userVerification',
+        })
+        .then(() => this.logger.log(`Email verifikasi berhasil dikirim ke ${newUser.email}`))
+        .catch((error) => this.logger.error(error));
+      }
 
       return Promise.resolve(newUser);
     } catch (error) {
