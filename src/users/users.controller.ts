@@ -2,14 +2,16 @@ import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, R
 import { Response } from 'express';
 import { UsersService } from './users.service';
 import { Users } from './entities/users.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto, LoginDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
+import { AuthService } from '../auth/auth.service';
 
 @Controller('users')
 export class UsersController {
   constructor (
     private readonly userService: UsersService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService
   ) {}
 
   @Get()
@@ -38,5 +40,10 @@ export class UsersController {
   @Post()
   async create(@Body() payload: CreateUserDto): Promise<Users> {
     return await this.userService.create(payload);
+  }
+
+  @Post('login')
+  async login(@Body() payload: LoginDto): Promise<Object> {
+    return await this.authService.login(payload);
   }
 }
