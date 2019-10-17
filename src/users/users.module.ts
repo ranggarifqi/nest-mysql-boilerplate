@@ -13,6 +13,7 @@ import { ConfigModule } from '../config/config.module';
     ConfigModule
   ],
   controllers: [UsersController],
-  providers: [UsersService, Logger]
+  providers: [UsersService, Logger],
+  exports: [UsersService]
 })
 export class UsersModule {}

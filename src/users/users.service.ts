@@ -34,9 +34,15 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number): Promise<Users> {
+  async findById(id: number): Promise<Users> {
     return await this.userRepository.findOne(id, {
       select: ['id', 'email', 'username', 'isVerified'],
+      relations: ['profile']
+    });
+  }
+
+  async findOne(filter: object): Promise<Users> {
+    return await this.userRepository.findOne(filter, {
       relations: ['profile']
     });
   }
