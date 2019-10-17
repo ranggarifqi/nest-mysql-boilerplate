@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { Roles } from "../../roles/entities/roles.entity";
 import { UserProfile } from "./user-profile.entity";
+import { Notes } from '../../notes/entity/notes.entity';
 
 @Entity()
 export class Users {
@@ -41,4 +42,7 @@ export class Users {
 
   @OneToOne(type => UserProfile, profile => profile.user)
   profile: UserProfile
+
+  @OneToMany(type => Notes, note => note.author)
+  notes: Notes
 }
