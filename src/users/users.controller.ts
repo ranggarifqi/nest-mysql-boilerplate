@@ -1,10 +1,11 @@
-import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Redirect, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Redirect, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { UsersService } from './users.service';
 import { Users } from './entities/users.entity';
 import { CreateUserDto, LoginDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
 import { AuthService } from '../auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -13,7 +14,8 @@ export class UsersController {
     private readonly configService: ConfigService,
     private readonly authService: AuthService
   ) {}
-
+  
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll(): Promise<Users[]> {
     return await this.userService.findAll();
