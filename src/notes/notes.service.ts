@@ -4,6 +4,7 @@ import { Repository, FindManyOptions, FindOneOptions } from 'typeorm';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { UsersService } from '../users/users.service';
+import { UpdateNoteDto } from './dto/updateNote.dto';
 
 @Injectable()
 export class NotesService {
@@ -34,5 +35,14 @@ export class NotesService {
     let newNote = this.notesRepository.create(notePayload);
     newNote.author = user;
     return await this.notesRepository.save(newNote);
+  }
+
+  async update(id: number, payload: UpdateNoteDto): Promise<Notes> {
+    const note = await this.notesRepository.findOne(id);
+    if (!note) {
+      throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
+    }
+    await this.notesRepository.update(id, payload);
+    return await this.notesRepository.findOne(id);
   }
 }

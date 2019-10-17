@@ -1,8 +1,9 @@
-import { Controller, Get, Query, HttpStatus, HttpException, Body, Post, UseGuards, Param } from '@nestjs/common';
+import { Controller, Get, Query, HttpStatus, HttpException, Body, Post, UseGuards, Param, Put } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateNoteDto } from './dto/updateNote.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -64,5 +65,11 @@ export class NotesController {
   @Post()
   async create(@Body() payload: CreateNoteDto): Promise<Notes> {
     return await this.notesService.create(payload);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':id')
+  async update(@Param() id: number, @Body() payload: UpdateNoteDto): Promise<Notes> {
+    return await this.notesService.update(id, payload);
   }
 }
