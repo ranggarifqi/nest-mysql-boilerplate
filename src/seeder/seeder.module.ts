@@ -9,12 +9,14 @@ import { UsersModule } from '../users/users.module';
 import { Users } from '../users/entities/users.entity';
 import { UserProfile } from '../users/entities/user-profile.entity';
 import { UsersService } from '../users/users.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     RolesModule,
     UsersModule,
     MysqlModule,
+    MailModule,
     TypeOrmModule.forFeature([Roles, Users, UserProfile])
   ],
   providers: [Logger, SeederService, RolesService, UsersService]

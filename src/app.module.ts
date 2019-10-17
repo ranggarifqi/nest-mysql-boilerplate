@@ -5,6 +5,7 @@ import { ConfigModule } from './config/config.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
 import { MysqlModule } from './database/mysql.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MysqlModule } from './database/mysql.module';
     MysqlModule,
     RolesModule,
     UsersModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
