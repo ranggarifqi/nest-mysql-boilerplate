@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindManyOptions } from 'typeorm';
+import { Repository, FindManyOptions, FindOneOptions } from 'typeorm';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { UsersService } from '../users/users.service';
@@ -12,8 +12,17 @@ export class NotesService {
     private readonly notesRepository: Repository<Notes>,
     private readonly usersService: UsersService
   ) {}
+  
   async findAll(filter?: FindManyOptions): Promise<Notes[]> {
     return await this.notesRepository.find(filter);
+  }
+
+  async findById(id: number, filter?: FindOneOptions): Promise<Notes> {
+    return await this.notesRepository.findOne(id, filter);
+  }
+
+  async findOne(filter: FindOneOptions): Promise<Notes> {
+    return await this.notesRepository.findOne(filter);
   }
 
   async create(payload: CreateNoteDto): Promise<Notes> {
