@@ -23,7 +23,8 @@ export class Notes {
   
   @CreateDateColumn({
     type: 'datetime',
-    nullable: true
+    nullable: true,
+    default: () => 'NULL'
   })
   deletedAt: Date;
 

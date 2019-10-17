@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTabl
 import { Roles } from "../../roles/entities/roles.entity";
 import { UserProfile } from "./user-profile.entity";
 import { Notes } from '../../notes/entity/notes.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Users {
@@ -16,6 +17,7 @@ export class Users {
   })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
