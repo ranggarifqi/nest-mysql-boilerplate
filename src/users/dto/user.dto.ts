@@ -12,3 +12,8 @@ export class CreateUserDto {
   readonly password: string;
   readonly profile: CreateUserProfileDto;
 }
+
+export class LoginDto {
+  readonly email: string;
+  readonly password: string;
+}

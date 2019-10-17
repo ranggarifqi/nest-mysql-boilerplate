@@ -1,17 +1,21 @@
-import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Redirect, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Redirect, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { UsersService } from './users.service';
 import { Users } from './entities/users.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto, LoginDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
+import { AuthService } from '../auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
   constructor (
     private readonly userService: UsersService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService
   ) {}
-
+  
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll(): Promise<Users[]> {
     return await this.userService.findAll();
@@ -31,12 +35,17 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param() id: number): Promise<Users> {
-    return await this.userService.findOne(id);
+  async findById(@Param() id: number): Promise<Users> {
+    return await this.userService.findById(id);
   }
 
   @Post()
   async create(@Body() payload: CreateUserDto): Promise<Users> {
     return await this.userService.create(payload);
+  }
+
+  @Post('login')
+  async login(@Body() payload: LoginDto): Promise<Object> {
+    return await this.authService.login(payload);
   }
 }
