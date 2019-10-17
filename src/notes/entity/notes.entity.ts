@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from "typeorm";
 import { Users } from '../../users/entities/users.entity';
 
 @Entity()
@@ -15,13 +15,13 @@ export class Notes {
   })
   description: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'datetime',
     default: () => 'NOW()'
   })
   createdAt: Date;
   
-  @Column({
+  @CreateDateColumn({
     type: 'datetime',
     nullable: true
   })

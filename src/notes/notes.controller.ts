@@ -1,4 +1,4 @@
-import { Controller, Get, Query, HttpStatus, HttpException, Body, Post, UseGuards, Param, Put } from '@nestjs/common';
+import { Controller, Get, Query, HttpStatus, HttpException, Body, Post, UseGuards, Param, Put, Delete } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
@@ -71,5 +71,11 @@ export class NotesController {
   @Put(':id')
   async update(@Param() id: number, @Body() payload: UpdateNoteDto): Promise<Notes> {
     return await this.notesService.update(id, payload);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  async delete(@Param() id: number): Promise<Object> {
+    return await this.notesService.delete(id);
   }
 }

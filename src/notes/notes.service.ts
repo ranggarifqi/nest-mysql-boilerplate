@@ -45,4 +45,19 @@ export class NotesService {
     await this.notesRepository.update(id, payload);
     return await this.notesRepository.findOne(id);
   }
+
+  async delete(id: number): Promise<Object> {
+    const note = await this.notesRepository.findOne(id);
+    if (!note) {
+      throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
+    }
+    if (note.deletedAt) {
+      throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
+    }
+    await this.notesRepository.update(id, { deletedAt: Date() });
+    return {
+      success: true,
+      deletedItem: note
+    }
+  }
 }
