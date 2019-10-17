@@ -1,29 +1,20 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindManyOptions, FindOneOptions } from 'typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { UsersService } from '../users/users.service';
 import { UpdateNoteDto } from './dto/updateNote.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class NotesService {
+export class NotesService extends TypeOrmCrudService<Notes> {
   constructor (
     @InjectRepository(Notes)
     private readonly notesRepository: Repository<Notes>,
     private readonly usersService: UsersService
-  ) {}
-  
-  async findAll(filter?: FindManyOptions): Promise<Notes[]> {
-    return await this.notesRepository.find(filter);
-  }
-
-  async findById(id: number, filter?: FindOneOptions): Promise<Notes> {
-    return await this.notesRepository.findOne(id, filter);
-  }
-
-  async findOne(filter: FindOneOptions): Promise<Notes> {
-    return await this.notesRepository.findOne(filter);
+  ) {
+    super(notesRepository);
   }
 
   async create(payload: CreateNoteDto): Promise<Notes> {
@@ -34,6 +25,7 @@ export class NotesService {
     }
     let newNote = this.notesRepository.create(notePayload);
     newNote.author = user;
+    newNote.deletedAt = null;
     return await this.notesRepository.save(newNote);
   }
 

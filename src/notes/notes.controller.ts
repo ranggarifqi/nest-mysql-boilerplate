@@ -4,78 +4,55 @@ import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateNoteDto } from './dto/updateNote.dto';
+import { Crud } from '@nestjsx/crud';
 
+@Crud({
+  model: {
+    type: Notes
+  },
+  query: {
+    join: {
+      author: {
+        exclude: ['password']
+      }
+    }
+  },
+  routes: {
+    only: ['getManyBase', 'getOneBase'],
+    getManyBase: {
+      decorators: [
+        UseGuards(AuthGuard('jwt'))
+      ]
+    },
+    getOneBase: {
+      decorators: [
+        UseGuards(AuthGuard('jwt'))
+      ]
+    }
+  },
+  
+})
 @Controller('notes')
 export class NotesController {
   constructor (
-    private readonly notesService: NotesService
+    public service: NotesService
   ) {}
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get()
-  async findAll(@Query('filter') filter): Promise<Notes[]> {
-    let parsedFilter = filter;
-    if (typeof filter === 'string') {
-      try {
-        parsedFilter = JSON.parse(filter);
-      } catch (error) {
-        throw new HttpException('filter harus berupa JSON String atau Object', HttpStatus.BAD_REQUEST);
-      }
-    }
-    return await this.notesService.findAll(parsedFilter);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get('findOne')
-  async findOne(@Query('filter') filter): Promise<Notes> {
-    let parsedFilter = filter;
-    if (typeof filter === 'string') {
-      try {
-        parsedFilter = JSON.parse(filter);
-      } catch (error) {
-        throw new HttpException('filter harus berupa JSON String atau Object', HttpStatus.BAD_REQUEST);
-      }
-    }
-    const note = await this.notesService.findOne(parsedFilter);
-    if (!note) {
-      throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
-    }
-    return note;
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Get(':id')
-  async findById(@Param() id: number, @Query('filter') filter): Promise<Notes> {
-    let parsedFilter = filter;
-    if (typeof filter === 'string') {
-      try {
-        parsedFilter = JSON.parse(filter);
-      } catch (error) {
-        throw new HttpException('filter harus berupa JSON String atau Object', HttpStatus.BAD_REQUEST);
-      }
-    }
-    const note = await this.notesService.findById(id, parsedFilter);
-    if (!note) {
-      throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
-    }
-    return note;
-  }
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() payload: CreateNoteDto): Promise<Notes> {
-    return await this.notesService.create(payload);
+    return await this.service.create(payload);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   async update(@Param() id: number, @Body() payload: UpdateNoteDto): Promise<Notes> {
-    return await this.notesService.update(id, payload);
+    return await this.service.update(id, payload);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async delete(@Param() id: number): Promise<Object> {
-    return await this.notesService.delete(id);
+    return await this.service.delete(id);
   }
 }
