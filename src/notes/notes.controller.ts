@@ -1,10 +1,12 @@
-import { Controller, Get, Query, HttpStatus, HttpException, Body, Post, UseGuards, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards, Param, Put, Delete } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { Notes } from './entity/notes.entity';
 import { CreateNoteDto } from './dto/createNote.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateNoteDto } from './dto/updateNote.dto';
 import { Crud } from '@nestjsx/crud';
+import { AclGuard } from '../auth/guards/acl.guard';
+import { AllowedRoles } from '../roles/decorators/roles.decorator';
 
 @Crud({
   model: {
@@ -21,37 +23,38 @@ import { Crud } from '@nestjsx/crud';
     only: ['getManyBase', 'getOneBase'],
     getManyBase: {
       decorators: [
-        UseGuards(AuthGuard('jwt'))
+        AllowedRoles('superadmin', 'admin')
       ]
     },
     getOneBase: {
       decorators: [
-        UseGuards(AuthGuard('jwt'))
+        AllowedRoles('superadmin', 'admin')
       ]
     }
   },
   
 })
 @Controller('notes')
+@UseGuards(AuthGuard('jwt'), AclGuard)
 export class NotesController {
   constructor (
     public service: NotesService
   ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
+  @AllowedRoles('superadmin', 'admin')
   async create(@Body() payload: CreateNoteDto): Promise<Notes> {
     return await this.service.create(payload);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
+  @AllowedRoles('superadmin', 'admin')
   async update(@Param() id: number, @Body() payload: UpdateNoteDto): Promise<Notes> {
     return await this.service.update(id, payload);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
+  @AllowedRoles('superadmin', 'admin')
   async delete(@Param() id: number): Promise<Object> {
     return await this.service.delete(id);
   }

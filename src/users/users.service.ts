@@ -43,7 +43,7 @@ export class UsersService {
 
   async findOne(filter: object): Promise<Users> {
     return await this.userRepository.findOne(filter, {
-      relations: ['profile']
+      relations: ['profile', 'roles']
     });
   }
 
