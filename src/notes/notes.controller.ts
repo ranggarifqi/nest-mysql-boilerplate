@@ -7,6 +7,7 @@ import { UpdateNoteDto } from './dto/updateNote.dto';
 import { Crud } from '@nestjsx/crud';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from '../roles/decorators/roles.decorator';
+import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -43,6 +44,9 @@ export class NotesController {
 
   @Post()
   @AllowedRoles('superadmin', 'admin')
+  @ApiCreatedResponse({ description: 'Berhasil di buat', type: Notes })
+  @ApiUnauthorizedResponse({ description: 'Harus login terlebih dahulu' })
+  @ApiForbiddenResponse({ description: 'User tidak memiliki akses' })
   async create(@Body() payload: CreateNoteDto): Promise<Notes> {
     return await this.service.create(payload);
   }
