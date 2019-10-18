@@ -8,7 +8,9 @@ import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from '../roles/decorators/roles.decorator';
-import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiUseTags, ApiBearerAuth, ApiImplicitParam } from '@nestjs/swagger';
+import { Notes } from 'src/notes/entity/notes.entity';
+import { CreateUserNoteDto } from './dto/create-note.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -16,7 +18,7 @@ export class UsersController {
   constructor (
     private readonly userService: UsersService,
     private readonly configService: ConfigService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
   
   @Get()
@@ -43,7 +45,7 @@ export class UsersController {
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  async findById(@Param() id: number): Promise<Users> {
+  async findById(@Param('id') id: number): Promise<Users> {
     return await this.userService.findById(id);
   }
 
@@ -55,5 +57,33 @@ export class UsersController {
   @Post('login')
   async login(@Body() payload: LoginDto): Promise<Object> {
     return await this.authService.login(payload);
+  }
+
+  /**
+   * Notes
+   */
+  @Get(':id/notes')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiImplicitParam({ name: 'id', required: true })
+  async findAllNotes(@Param('id') id: number): Promise<Notes[]> {
+    return await this.userService.findAllNotes(id);
+  }
+
+  @Get(':id/notes/:noteId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiImplicitParam({ name: 'id', required: true })
+  @ApiImplicitParam({ name: 'noteId', required: true })
+  async findNoteById(@Param('id') id: number, @Param('noteId') noteId: number): Promise<Notes> {
+    return await this.userService.findNoteById(id, noteId);
+  }
+
+  @Post(':id/notes')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiImplicitParam({ name: 'id', required: true })
+  async createNote(@Param('id') id: number, @Body() payload: CreateUserNoteDto): Promise<Notes> {
+    return await this.userService.createNote(id, payload);
   }
 }
