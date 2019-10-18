@@ -9,6 +9,7 @@ export class AclGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // baca role dari metadata, coba cek custom decorator "AllowedRoles" di dalam file "roles.decorator.ts"
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
     if (!roles) return true;
 
