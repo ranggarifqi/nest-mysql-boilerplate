@@ -7,7 +7,7 @@ import { UpdateNoteDto } from './dto/updateNote.dto';
 import { Crud } from '@nestjsx/crud';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from '../roles/decorators/roles.decorator';
-import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth, ApiUseTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -36,6 +36,7 @@ import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiB
   
 })
 @ApiBearerAuth()
+@ApiUseTags('notes')
 @Controller('notes')
 @UseGuards(AuthGuard('jwt'), AclGuard)
 export class NotesController {

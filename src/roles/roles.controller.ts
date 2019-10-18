@@ -5,7 +5,10 @@ import { CreateRolesDto } from './dto/create-roles.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from './decorators/roles.decorator';
+import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiUseTags('roles')
+@ApiBearerAuth()
 @Controller('roles')
 @UseGuards(AuthGuard('jwt'), AclGuard)
 export class RolesController {
