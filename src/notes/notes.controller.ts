@@ -7,6 +7,7 @@ import { UpdateNoteDto } from './dto/updateNote.dto';
 import { Crud } from '@nestjsx/crud';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from '../roles/decorators/roles.decorator';
+import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth, ApiUseTags, ApiOperation } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -34,6 +35,8 @@ import { AllowedRoles } from '../roles/decorators/roles.decorator';
   },
   
 })
+@ApiBearerAuth()
+@ApiUseTags('notes')
 @Controller('notes')
 @UseGuards(AuthGuard('jwt'), AclGuard)
 export class NotesController {
@@ -43,6 +46,13 @@ export class NotesController {
 
   @Post()
   @AllowedRoles('superadmin', 'admin')
+  @ApiCreatedResponse({ description: 'Berhasil di buat', type: Notes })
+  @ApiUnauthorizedResponse({ description: 'Harus login terlebih dahulu' })
+  @ApiForbiddenResponse({ description: 'User tidak memiliki akses' })
+  @ApiOperation({
+    title: 'Tambah data baru',
+    description: 'Harus login terlebih dahulu & hanya superadmin / admin yang boleh'
+  })
   async create(@Body() payload: CreateNoteDto): Promise<Notes> {
     return await this.service.create(payload);
   }

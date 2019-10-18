@@ -8,7 +8,9 @@ import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AclGuard } from '../auth/guards/acl.guard';
 import { AllowedRoles } from '../roles/decorators/roles.decorator';
+import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiUseTags('users')
 @Controller('users')
 export class UsersController {
   constructor (
@@ -20,6 +22,7 @@ export class UsersController {
   @Get()
   @UseGuards(AuthGuard('jwt'), AclGuard)
   @AllowedRoles('superadmin', 'admin')
+  @ApiBearerAuth()
   async findAll(): Promise<Users[]> {
     return await this.userService.findAll();
   }
@@ -39,6 +42,7 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
   async findById(@Param() id: number): Promise<Users> {
     return await this.userService.findById(id);
   }
