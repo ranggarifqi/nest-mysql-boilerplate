@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Query, HttpException, HttpStatus, Res, UseGuards, Put, Delete } from '@nestjs/common';
 import { Response } from 'express';
 import { UsersService } from './users.service';
 import { Users } from './entities/users.entity';
@@ -87,5 +87,23 @@ export class UsersController {
   @ApiImplicitParam({ name: 'id', required: true })
   async createNote(@Param('id') id: number, @Body() payload: CreateUserNoteDto): Promise<Notes> {
     return await this.userNoteService.createNote(id, payload);
+  }
+  
+  @Put(':id/notes/:noteId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiImplicitParam({ name: 'id', required: true })
+  @ApiImplicitParam({ name: 'noteId', required: true })
+  async updateNote(@Param('id') id: number, @Param('noteId') noteId: number, @Body() payload: CreateUserNoteDto): Promise<Notes> {
+    return await this.userNoteService.updateNote(id, noteId, payload);
+  }
+
+  @Delete(':id/notes/:noteId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiImplicitParam({ name: 'id', required: true })
+  @ApiImplicitParam({ name: 'noteId', required: true })
+  async deleteNote(@Param('id') id: number, @Param('noteId') noteId: number): Promise<{success: boolean, deletedItem: Notes}> {
+    return this.userNoteService.deleteNote(id, noteId);
   }
 }

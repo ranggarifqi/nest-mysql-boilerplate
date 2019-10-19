@@ -37,4 +37,26 @@ export class UserNoteService {
     newNote.author = author;
     return await this.noteRepository.save(newNote);
   }
+
+  async updateNote(userId: number, noteId: number, payload: CreateUserNoteDto): Promise<Notes> {
+    const note = await this.noteRepository.findOne(noteId, {
+      where: { author: { id: userId } }
+    });
+    if (!note) throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
+
+    await this.noteRepository.update(noteId, payload);
+    return await this.noteRepository.findOne(noteId);
+  }
+
+  async deleteNote(userId: number, noteId: number): Promise<{ success: boolean, deletedItem: Notes }> {
+    const note = await this.noteRepository.findOne(noteId, {
+      where: { author: { id: userId } }
+    });
+    if (!note || note.deletedAt) throw new HttpException('Data tidak ditemukan', HttpStatus.BAD_REQUEST);
+    await this.noteRepository.update(noteId, { deletedAt: Date() });
+    return {
+      success: true,
+      deletedItem: note
+    }
+  }
 }
