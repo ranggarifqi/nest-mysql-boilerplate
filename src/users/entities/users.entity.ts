@@ -46,5 +46,5 @@ export class Users {
   profile: UserProfile
 
   @OneToMany(type => Notes, note => note.author)
-  notes: Notes
+  notes: Notes[]
 }

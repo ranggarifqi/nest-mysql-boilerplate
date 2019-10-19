@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/users.entity';
 import { Repository } from 'typeorm';
@@ -10,12 +10,15 @@ import * as bcrypt from 'bcrypt';
 import * as md5 from 'md5';
 import { MailerService } from '@nest-modules/mailer';
 import { ConfigService } from '../config/config.service';
+import { NotesService } from '../notes/notes.service';
+import { Notes } from '../notes/entity/notes.entity';
+import { CreateUserNoteDto } from './dto/create-note.dto';
 
 const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UsersService {
-  constructor (
+  constructor(
     private readonly logger: Logger,
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
@@ -25,7 +28,9 @@ export class UsersService {
     private readonly roleRepository: Repository<Roles>,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) {}
+    @InjectRepository(Notes)
+    private readonly noteRepository: Repository<Notes>
+  ) { }
 
   async findAll(): Promise<Users[]> {
     return await this.userRepository.find({
@@ -70,7 +75,7 @@ export class UsersService {
       newUser.isVerified = isAdmin;
       newUser.verificationToken = !isAdmin ? md5(newUser.email) : null;
       newUser.roles = [role];
-      await this.userRepository.save(newUser); 
+      await this.userRepository.save(newUser);
 
       const newProfile = this.profileRepository.create(profilePayload);
       newProfile.user = newUser;
@@ -86,8 +91,8 @@ export class UsersService {
             verificationLink: `${this.configService.get('BASE_URL')}/users/verify?t=${newUser.verificationToken}`
           }
         })
-        .then(() => this.logger.log(`Email verifikasi berhasil dikirim ke ${newUser.email}`))
-        .catch((error) => this.logger.error(error));
+          .then(() => this.logger.log(`Email verifikasi berhasil dikirim ke ${newUser.email}`))
+          .catch((error) => this.logger.error(error));
       }
 
       return Promise.resolve(newUser);
@@ -101,7 +106,7 @@ export class UsersService {
       const user = await this.userRepository.findOne({ verificationToken, isVerified: false });
       if (!user) {
         return Promise.resolve(false);
-      } 
+      }
       user.isVerified = true;
       user.verificationToken = null;
       await this.userRepository.save(user);
@@ -111,6 +116,13 @@ export class UsersService {
     }
   }
 
+  /**
+   * Notes
+  */
+
+  
+
+  /** */
 
   //////////////////////
 

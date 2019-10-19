@@ -16,24 +16,17 @@ import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiB
   query: {
     join: {
       author: {
-        exclude: ['password']
+        exclude: ['password'],
+        eager: true,
       }
-    }
-  },
-  routes: {
-    only: ['getManyBase', 'getOneBase'],
-    getManyBase: {
-      decorators: [
-        AllowedRoles('superadmin', 'admin')
-      ]
     },
-    getOneBase: {
-      decorators: [
-        AllowedRoles('superadmin', 'admin')
-      ]
-    }
+    filter: [
+      {
+        field: 'deletedAt',
+        operator: 'isnull'
+      }
+    ]
   },
-  
 })
 @ApiBearerAuth()
 @ApiUseTags('notes')
