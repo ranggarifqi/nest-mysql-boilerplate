@@ -18,7 +18,13 @@ import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiB
       author: {
         exclude: ['password']
       }
-    }
+    },
+    filter: [
+      {
+        field: 'deletedAt',
+        operator: 'isnull'
+      }
+    ]
   },
   routes: {
     only: ['getManyBase', 'getOneBase'],
