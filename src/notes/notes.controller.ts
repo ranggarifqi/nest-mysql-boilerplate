@@ -16,7 +16,8 @@ import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiB
   query: {
     join: {
       author: {
-        exclude: ['password']
+        exclude: ['password'],
+        eager: true,
       }
     },
     filter: [
@@ -26,20 +27,6 @@ import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiB
       }
     ]
   },
-  routes: {
-    only: ['getManyBase', 'getOneBase'],
-    getManyBase: {
-      decorators: [
-        AllowedRoles('superadmin', 'admin')
-      ]
-    },
-    getOneBase: {
-      decorators: [
-        AllowedRoles('superadmin', 'admin')
-      ]
-    }
-  },
-  
 })
 @ApiBearerAuth()
 @ApiUseTags('notes')
