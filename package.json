@@ -33,7 +33,7 @@
     "@nestjsx/crud-typeorm": "^4.2.0",
     "@types/bcrypt": "^3.0.0",
     "@types/md5": "^2.1.33",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.10.2",
     "dotenv": "^8.1.0",
